@@ -1,0 +1,84 @@
+{
+  "summary": "Frontend-only mobile regression run executed on public URL at 390x844 and 375x667 with synthetic sessions. Core auth/session, location search, weather display, assistant send/history, diagnosis no-photo validation, and screenshots were validated; several marketplace/diary/workboard flows remain blocked by modal viewport/tapability issues.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Home render path",
+        "issue": "Expo logs still show repeated runtime error: 'Unexpected text node: . A text node cannot be a child of a <View>' with stack at src/screens/Home.tsx:26 despite prior guard fixes.",
+        "testID": "home-screen",
+        "priority": "CRITICAL"
+      },
+      {
+        "component": "Create listing / Diary / Listing detail modals",
+        "issue": "Primary modal actions frequently become non-tappable at 390x844 (outside viewport): calendar day selection, diary save/delete confirm, listing respond, etc. Requires manual wheel scrolling workarounds and still flaky.",
+        "testID": "listing-start-date-day-*, diary-save-button, confirm-delete-diary, listing-respond-button",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Tools/work full end-to-end user workflows",
+        "issue": "Could not complete all requested marketplace/work-board scenarios (create via UI calendar, owner accept/decline + renter cancel + privacy matrix) due modal viewport interaction blockers and intermittent no-listing state.",
+        "affected_testIDs": [
+          "open-create-listing",
+          "listing-start-date",
+          "listing-end-date",
+          "listing-respond-button",
+          "confirm-delete-diary"
+        ]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Sheet-based modals on mobile web",
+        "issues": [
+          "Critical actions frequently render below visible/tappable area at 390x844, reducing form usability.",
+          "Modal interaction reliability depends on manual scroll/wheel workarounds."
+        ]
+      }
+    ],
+    "react_native_issues": [
+      {
+        "component": "RN Text/View tree",
+        "issue": "Unexpected text-node runtime violation still emitted from Home render path in Expo logs."
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/artifacts_iter3/home_390_baseline.jpeg",
+    "/app/test_reports/artifacts_iter3/home_owner_390.jpeg",
+    "/app/test_reports/artifacts_iter3/marketplace_other_390.jpeg",
+    "/app/test_reports/artifacts_iter3/request_form_390.jpeg",
+    "/app/test_reports/artifacts_iter3/assistant_375.jpeg",
+    "/root/.emergent/automation_output/20260926_232042/console_20260926_232042.log",
+    "/var/log/supervisor/expo.out.log"
+  ],
+  "action_items": [
+    "Fix remaining 'Unexpected text node' runtime error in Home render path (actual production/web bundle still emits it).",
+    "Fix modal viewport/tapability for critical buttons and date cells at 390x844/375x667 (create listing, diary save/delete, listing respond).",
+    "After modal fix, re-run blocked flows: tool listing create with calendar, my listing close/reopen, owner accept/decline + renter cancel, request privacy, workboard two-sided interest and decisions.",
+    "Re-verify calendar grid usability (7-column day selection) and complete crop-add/deletion validations without scroll hacks."
+  ],
+  "critical_code_review_comments": [
+    "app/_layout.tsx uses LogBox.ignoreAllLogs(true), which hides runtime warnings/errors during QA and can mask production regressions.",
+    "Several long single-line JSX return blocks reduce maintainability/debuggability and made text-node RCA difficult under minified bundles.",
+    "Home runtime stack traces from Expo logs indicate unresolved RN text rendering violation despite prior boolean guard changes."
+  ],
+  "updated_files": [
+    "/app/tests/seed_ui_sessions_iter3.py",
+    "/app/test_reports/iteration_3.json"
+  ],
+  "success_rate": {
+    "backend": "N/A (frontend-only run)",
+    "frontend": "58%"
+  },
+  "seed_data_creation": "Created/rotated synthetic UI sessions for TEST_user_ui_owner and TEST_user_ui_other; created one TEST_UI_SEEDED_TOOL_REQ listing via public API to unblock request-form capture.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use fresh synthetic session tokens (owner/other) since signout invalidates tokens. Request-form screenshot now exists. Avoid repeating selector retries for listing-start-date-day and diary modal buttons without first fixing modal viewport behavior.",
+  "rca_of_issue": "Repro for critical runtime: authenticate -> open Home; Expo logs repeatedly emit 'Unexpected text node: .' with stack at Home.tsx:26. Repro for usability blocker: at 390x844 open Sheet modals (listing/diary/detail) and try pressing lower actions/date cells; Playwright reports element outside viewport even with force click, requiring wheel scroll and still flaky. Mitigation: ensure modal scroll container reliably exposes actionable controls inside viewport and verify RN text nodes are never emitted outside <Text>."
+}

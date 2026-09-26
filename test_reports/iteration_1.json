@@ -1,0 +1,45 @@
+{
+  "summary": "Full e2e test of Krushi Raksha (backend + frontend). Backend: 12/12 pytest tests PASS against public URL (health, live-weather dashboard with seeded Soybean crop + risks, diary create/get/422, Marathi assistant via Gemini with history persistence, diagnosis multipart 200/415/422, land-records 5 steps + log-download). Frontend: home renders with live temp (22.1C), all 4 quick actions, crop watch, risk card, EN<->MR toggle across screens, all 4 bottom-nav tabs, full diary create flow (toast, timeline, expense total update, persistence after reload), diagnosis modal render + no-photo validation toast, 7/12 modal with 5 steps + official portal handoff in new tab without crash, assistant Gemini reply works (~3s) and history persists. ONE CRITICAL UI BUG: assistant chat composer (input + send button) is fully hidden behind the absolute-positioned glass bottom nav - send button is NOT tappable by real users (taps land on nav-tab-diary instead).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/diary", "issue": "No DELETE endpoint for diary entries, so TEST_-prefixed entries accumulate; also no ownership scoping (known backlog item)"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AssistantScreen chat composer", "issue": "assistant-input (y 597-655) and assistant-send-button (y 607-655) are entirely covered by the floating BottomNav (top y=592, position:absolute, minHeight 75). Send button is not tappable; Playwright's non-force click times out with 'bottom-nav subtree intercepts pointer events', and force clicks at the send-button coordinates hit nav-tab-diary, switching tabs. AssistantScreen lacks bottom padding to clear the nav (HomeScreen scrollContent has paddingBottom:128 but the composer is outside the ScrollView). Verified on 375x667 web preview; same absolute-overlay structure affects native. Reference: /app/frontend/app/index.tsx:553-567 (chatComposer) and bottomNav style at index.tsx:950", "testID": "assistant-send-button", "priority": "CRITICAL"},
+      {"component": "AssistantScreen chat list", "issue": "chatContent paddingBottom is only 20, so the latest message bubbles are obscured by the floating bottom nav (75px). Reference: /app/frontend/app/index.tsx:950 (chatContent)", "testID": "assistant-screen", "priority": "HIGH"},
+      {"component": "Assistant message bubble", "issue": "Gemini replies contain markdown (**bold**, numbered lists) which is rendered as raw asterisks in Text. Minor UX issue.", "testID": "chat-message-assistant", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Diary timeline", "issues": ["Entry meta line shows English activity_type ('Soybean - irrigation - Rs500') even in Marathi mode - not localized"]},
+      {"screen": "Bottom nav", "issues": ["BlurView does not blur on web preview (expected platform limitation), showing translucent smudges over content behind nav - acceptable"]}
+    ],
+    "react_native_issues": [
+      {"component": "StyleSheet styles", "issue": "Console warning on web: 'shadow* style props are deprecated. Use boxShadow' (weatherCard uses shadowColor/shadowOpacity/shadowRadius/shadowOffset). Reference: /app/frontend/app/index.tsx:950"}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_krushi_raksha_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "CRITICAL: Fix assistant composer being hidden under the floating bottom nav - add bottom padding/margin of at least nav height (75px + bottom inset) to the chat composer (e.g. paddingBottom on chatComposer or marginBottom equal to bottom nav height), and increase chatContent paddingBottom similarly so last messages are visible",
+    "Localize diary timeline meta (activity_type) for Marathi mode",
+    "Replace deprecated shadow* style props with boxShadow to clear web console warning",
+    "Optional: strip/render markdown in assistant bubbles (Gemini returns ** markdown)",
+    "Code health: split app/index.tsx (951 lines > 700 guideline) into per-screen components"
+  ],
+  "critical_code_review_comments": [
+    "app/index.tsx is 951 lines with 8+ screen/modal components - exceeds 700-line guideline, should be split into src/components/*",
+    "Backend: data integrity approach is sound - unique id indexes, single-document atomic inserts, _id excluded from all responses, timezone-aware UTC datetimes",
+    "Backend: assistant/diagnosis create fresh LlmChat session per request (no conversational memory) - acceptable for current scope",
+    "Frontend: loadDashboard is memoized over stale language closure for the GPS-blocked toast text (minor, toast may show in previous language)"
+  ],
+  "updated_files": ["/app/backend/tests/test_krushi_raksha_api.py"],
+  "success_rate": {"backend": "100% (12/12)", "frontend": "92% (all flows pass except assistant composer tappability)"},
+  "seed_data_creation": "Created TEST_-prefixed diary entries (TEST_Irrigated north plot x2 via API, TEST_Urea purchase e2e via UI) and assistant/diagnosis records via API tests. No DELETE endpoint exists, so they persist; prefixed TEST_ for identification.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend fully green (12/12) via /app/backend/tests/test_krushi_raksha_api.py - reuse for regression. Known CRITICAL bug: assistant-send-button/assistant-input hidden under floating bottom nav (nav top y=592 on 375x667); use JS dispatchEvent click to functionally test assistant until fixed. Diary modal clicks need ~1.5s wait after open for slide animation or clicks fail 'element outside viewport'. Assistant history is seeded with prior test messages, so suggestion chips (assistant-suggestion-*) only render when history is empty. Gemini replies in ~3-8s. Photo upload for diagnosis cannot be tested on web preview (native only).",
+  "rca_of_issue": "Assistant send button not tappable. Repro: open Ask tab, type message, tap send -> nothing happens (tap intercepted by bottom nav). RCA: BottomNav is position:absolute at bottom (minHeight 75) rendered as sibling AFTER content in app-root; AssistantScreen's KeyboardAvoidingView flex container extends to screen bottom with no bottom padding, so chatComposer (height ~70) sits entirely within the nav's hit area. BlurView is transparent so users cannot see the composer either. Mitigation: give chatComposer marginBottom/paddingBottom >= 75 + bottom inset, or render BottomNav in normal flow; also increase chatContent paddingBottom from 20."
+}

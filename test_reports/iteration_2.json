@@ -1,0 +1,67 @@
+{
+  "summary": "Backend auth/privacy/market regression passed (11/11) with seeded synthetic users. Frontend authenticated run reproduced a critical React Native runtime render error ('Unexpected text node') that blocks deeper UI flow testing.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Authenticated Home + shared Sheet UI",
+        "issue": "Runtime error repeatedly thrown: 'Unexpected text node: . A text node cannot be a child of a <View>'. Error surfaces in Home.tsx (around return block) and ui.tsx Sheet rendering, causing Expo error overlay/toast and blocking normal navigation/testing.",
+        "testID": "home-screen / location-picker-modal",
+        "priority": "CRITICAL"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Authenticated dashboard -> location picker -> market navigation",
+        "issue": "Synthetic session injection worked and manual location search (Pune) updated header location, but repeated runtime render errors prevented reliable progression to listing create/request flows.",
+        "affected_testIDs": [
+          "app-root",
+          "location-picker-trigger",
+          "location-search-input",
+          "header-location",
+          "nav-tab-tools"
+        ]
+      }
+    ],
+    "design_issues": [],
+    "react_native_issues": [
+      {
+        "component": "React Native Text/View tree",
+        "issue": "Text node placement violation in web preview render path (RN rule: raw text must be within Text)."
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_auth_market_private_flows.py",
+    "/app/test_reports/pytest/pytest_results.xml",
+    "/app/test_reports/artifacts_iter_next/authenticated_390.png",
+    "/app/test_reports/artifacts_iter_next/owner_flow_failed_390.png",
+    "/root/.emergent/automation_output/20260926_231052/console_20260926_231052.log",
+    "/var/log/supervisor/expo.out.log"
+  ],
+  "action_items": [
+    "Fix the 'Unexpected text node' runtime issue in authenticated screens/components (Home.tsx and shared ui.tsx/Sheet path) before further UI validation.",
+    "After fix, retest requested mobile flows at 390x844 and 375x667: market listing create/request/accept/cancel, work board two-way interest, assistant send tap without force, diary/crop regression, signout/401 stale-session behavior."
+  ],
+  "critical_code_review_comments": [
+    "Frontend currently violates RN text rendering constraints during authenticated use, producing repeated runtime errors in Expo preview.",
+    "Backend auth/session/privacy controls are strong in tested paths: 401 on missing/invalid/expired token, owner-only data scoping, request/accept conflict handling and overlap booking protection all validated."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_auth_market_private_flows.py",
+    "/app/memory/test_credentials.md",
+    "/app/test_reports/iteration_2.json"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11)",
+    "frontend": "30% (auth injection + location selection verified; critical runtime error blocked remaining flows)"
+  },
+  "seed_data_creation": "Created synthetic Mongo test users/sessions for API and UI testing: TEST_user_owner_api, TEST_user_renter_api, TEST_user_outsider_api, plus temporary UI users TEST_user_ui_owner and TEST_user_ui_other.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Do not proceed with deeper UI assertions until runtime text-node error is fixed. Session injection key works via localStorage JSON under 'krushi_session' (and common AsyncStorage key variants). Manual location search Pune succeeded and header location updated.",
+  "rca_of_issue": "Repro: Inject valid synthetic session -> authenticated home renders -> open/close location picker and continue navigating. Console/expo logs repeatedly show 'Unexpected text node: . A text node cannot be a child of a <View>' with stack pointing to src/screens/Home.tsx and src/ui.tsx (Sheet). This runtime render issue destabilizes screen interactions and blocks marketplace flow tests."
+}

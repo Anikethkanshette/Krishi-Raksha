@@ -1,0 +1,209 @@
+{
+  "app_name": "Krushi Raksha (कृषी रक्षण)",
+  "app_type": "mobile_web_app",
+  "theme_archetype": "Architectural Emerald & Harvest Gold (Organic Precision)",
+  "design_principles": [
+    "Glanceable & Tactical Field UX: High contrast, 48px+ touch targets, readable under 10,000+ lux sunlight",
+    "Dual Language Dominance: Seamless real-time toggle between Marathi (मराठी) and English across all interfaces",
+    "Private Ownership & Per-User Isolation: Clear visual badges for user-owned tool listings, rental requests, job posts, crop diary, and AI conversations",
+    "Actionable Agentic UI: Smart summaries (e.g. 'Pest Alert: High humidity in Baramati - Spray bio-fungicide today') over raw data dump",
+    "Literal Equipment & Agricultural Visuals: Realistic tool & field imagery instead of abstract icons"
+  ],
+  "typography": {
+    "heading_font": "System / Barlow Condensed / Sans-Serif Bold",
+    "body_font": "System / Inter / Sans-Serif",
+    "marathi_font": "Noto Sans Devanagari / System",
+    "sizes": {
+      "h1_hero": "text-3xl sm:text-4xl font-bold tracking-tight",
+      "h2_section": "text-xl sm:text-2xl font-bold tracking-tight",
+      "h3_card_title": "text-lg sm:text-xl font-semibold",
+      "body_text": "text-sm sm:text-base font-normal leading-relaxed",
+      "caption_label": "text-xs font-medium uppercase tracking-wider"
+    },
+    "hierarchy_rules": "Headline to body jump must not exceed 2 Tailwind scale steps. Headings must have tracking-tight."
+  },
+  "colors": {
+    "theme_tokens": {
+      "primary_emerald_dark": "#062314",
+      "primary_emerald_base": "#0D472A",
+      "primary_emerald_light": "#1B6B43",
+      "accent_gold": "#E5A93C",
+      "accent_amber": "#F59E0B",
+      "bg_dark_slate": "#0B1410",
+      "surface_card_dark": "#122019",
+      "surface_card_border": "#1E3529",
+      "surface_card_hover": "#172C22",
+      "text_light_primary": "#F4F7F5",
+      "text_light_secondary": "#9EAEA4",
+      "text_gold": "#F6C869",
+      "status_danger": "#EF4444",
+      "status_warning": "#F59E0B",
+      "status_success": "#10B981",
+      "status_info": "#3B82F6"
+    },
+    "contrast_rules": "Minimum 4.5:1 for standard text, 3:1 for large headers. Interactive hover states must explicitly specify text colors (e.g., hover:bg-emerald-700 hover:text-white)."
+  },
+  "layout_and_navigation": {
+    "container": "Mobile responsive web shell with max-w-md mx-auto shadow-2xl bg-slate-950 text-slate-100 min-h-screen relative pb-20 font-sans",
+    "header": {
+      "type": "Sticky Top Header with Glassmorphism",
+      "style": "bg-[#062314]/90 backdrop-blur-md border-b border-[#1E3529] px-4 py-3 flex items-center justify-between z-40 sticky top-0",
+      "elements": [
+        "Brand Logo & Title ('कृषी रक्षण / Krushi Raksha')",
+        "Interactive Location Pill (GPS indicator + Village/City picker trigger)",
+        "Language Toggle Pill (मराठी / ENG)",
+        "Google Profile Avatar & Auth Status Menu"
+      ]
+    },
+    "bottom_navigation": {
+      "type": "Fixed 5-Tab Ergonomic Bottom Navigation Bar",
+      "style": "fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#062314]/95 backdrop-blur-lg border-t border-[#1E3529] py-2 px-1 flex justify-around items-center z-50 shadow-lg",
+      "tabs": [
+        {"id": "nav-tab-home", "label_en": "Home & Weather", "label_mr": "मुख्य व हवामान", "icon": "CloudSun"},
+        {"id": "nav-tab-rentals", "label_en": "Tool Rentals", "label_mr": "औजार भाडे", "icon": "Tractor"},
+        {"id": "nav-tab-jobs", "label_en": "Farm Jobs", "label_mr": "शेतमजूर", "icon": "Users"},
+        {"id": "nav-tab-diagnosis", "label_en": "AI Crop Guard", "label_mr": "AI पिके", "icon": "Sparkles"},
+        {"id": "nav-tab-guide-diary", "label_en": "7/12 & Diary", "label_mr": "७/१२ व डायरी", "icon": "FileText"}
+      ]
+    }
+  },
+  "key_features_and_screen_architecture": {
+    "auth_flow": {
+      "description": "Emergent Managed Google Sign-in integration welcome overlay & state banner",
+      "components": [
+        "Welcome Hero Card with Maharashtra farm background photo",
+        "Google Sign-In Button with official Google icon and data-testid='google-signin-button'",
+        "Guest Mode preview toggle with user privilege notice",
+        "User profile card showing authenticated Google account email, name, avatar, and sign-out option"
+      ]
+    },
+    "location_system": {
+      "description": "Precise GPS location detection with manual Village/Taluka fallback modal",
+      "components": [
+        "Location Banner displaying active location (e.g., 'Baramati, Pune District • GPS Accurate')",
+        "Location Picker Modal (data-testid='location-picker-modal') with search input for Maharashtra districts/villages (Pune, Nashik, Kolhapur, Solapur, Satara, Ahmednagar, Amravati, etc.)",
+        "GPS Refresh Button (data-testid='gps-refresh-button') to recalculate coordinates"
+      ]
+    },
+    "home_dashboard": {
+      "description": "Real-time weather, risk alerts, and agentic crop advisories",
+      "components": [
+        "Weather Hero Banner with temperature (°C), weather icon, humidity %, wind speed, and rain probability",
+        "Pest & Weather Risk Alert Cards (High Risk Amber/Red badges with recommended preventive measures)",
+        "Quick Action Grid: Quick access to rental search, post job, crop disease scan, and 7/12 lookup"
+      ]
+    },
+    "tool_rental_marketplace": {
+      "description": "Peer-to-peer agricultural equipment rental feed with daily rate and date booking",
+      "components": [
+        "Search & Category Filters (Tractors, Sprayers, Harvesters, Tillers, Drip Equipment)",
+        "Tool Feed Grid with daily rate (₹/day), distance indicator (e.g., '3.5 km away'), specs, owner profile, and status badge",
+        "Create Tool Listing Modal (data-testid='create-tool-modal') for farmers to list their own tools with daily rate & location",
+        "Date-based Request to Rent Modal (data-testid='rent-request-modal') with start/end date selection & total cost calculator"
+      ]
+    },
+    "farm_jobs_worker_board": {
+      "description": "Unified 2-Way Marketplace for Farm Jobs and Worker Availability",
+      "components": [
+        "Segmented View Switcher: 'All Listings', 'Jobs (Farmers Hiring)', 'Workers Available', 'My Activity'",
+        "Job Card: Work title (e.g., 'Sugarcane Harvest - 6 Workers Needed'), pay rate (₹/day or ₹/acre), duration, location, applicant count",
+        "Worker Availability Card: Group size, skills (Spraying, Sowing, Tilling), daily wage expectation, available dates",
+        "Post Job / Worker Profile Modal (data-testid='post-job-modal')",
+        "Instant 'Mark Interest' / 'Contact Worker' Action Button (data-testid='job-mark-interest-button')"
+      ]
+    },
+    "private_crop_diary": {
+      "description": "Per-user private farming activity and expense tracker",
+      "components": [
+        "Diary Entry Form (data-testid='diary-entry-form'): Crop type, activity (Sowing, Irrigation, Fertilizer, Harvest), cost spent (₹), notes",
+        "Timeline History List with filter by crop and date range",
+        "Expense Summary Ledger (Total invested vs yield returns)"
+      ]
+    },
+    "ai_assistant_and_diagnosis": {
+      "description": "AI Crop Disease Diagnosis and Marathi/English Farming Assistant",
+      "components": [
+        "Camera Crop Scan Simulator / Image Upload (data-testid='crop-diagnosis-upload')",
+        "Diagnostic Result Screen: Identified disease name, severity score, cause, treatment spray recommendation, dosage",
+        "AI Chat Assistant (data-testid='ai-chat-input'): Voice & text interaction for crop advice, government schemes (PM-Kisan, PMFBY), and Mandi market prices"
+      ]
+    },
+    "official_712_guide": {
+      "description": "Official Mahabhulekh 7/12 (Satbara Utara), 8A land record step-by-step guide",
+      "components": [
+        "Interactive Step-by-Step Portal Guide (Step 1: District Select, Step 2: Taluka/Village, Step 3: Survey/Gat No, Step 4: Digital Verification)",
+        "Official Portal Launch Helper (Direct link & guidance to mahabhulekh.maharashtra.gov.in)",
+        "Document Checklist & Land Area Converter (Acre to Guntha to Hectare calculator)"
+      ]
+    }
+  },
+  "image_urls": {
+    "hero_farm": "https://images.unsplash.com/photo-1774697443203-0f54409d1613?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "tractor": "https://images.unsplash.com/photo-1571509107684-7e3034a90012?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "harvest_field": "https://images.unsplash.com/photo-1530507629858-e4977d30e9e0?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "crop_close_up": "https://images.unsplash.com/photo-1683506684881-efbb5203eacf?crop=entropy&cs=srgb&fm=jpg&q=85"
+  },
+  "data_testid_strategy": {
+    "navigation": [
+      "nav-tab-home",
+      "nav-tab-rentals",
+      "nav-tab-jobs",
+      "nav-tab-diagnosis",
+      "nav-tab-guide-diary",
+      "language-toggle-button",
+      "location-picker-trigger"
+    ],
+    "auth": [
+      "google-signin-button",
+      "google-signout-button",
+      "user-profile-avatar"
+    ],
+    "location": [
+      "location-picker-modal",
+      "location-search-input",
+      "location-option-baramati",
+      "gps-refresh-button"
+    ],
+    "rentals": [
+      "tool-listing-card-1",
+      "open-create-tool-modal",
+      "create-tool-title-input",
+      "create-tool-price-input",
+      "submit-create-tool-button",
+      "rent-now-button",
+      "rent-request-modal",
+      "confirm-rental-booking-button"
+    ],
+    "jobs": [
+      "job-filter-all",
+      "job-filter-jobs",
+      "job-filter-workers",
+      "open-post-job-modal",
+      "post-job-title-input",
+      "submit-job-post-button",
+      "job-mark-interest-button"
+    ],
+    "ai_diagnosis": [
+      "crop-diagnosis-upload",
+      "camera-scan-simulate-button",
+      "ai-chat-input",
+      "ai-chat-send-button"
+    ],
+    "diary_and_712": [
+      "add-diary-entry-button",
+      "diary-crop-input",
+      "diary-cost-input",
+      "save-diary-entry-button",
+      "land-area-converter-input",
+      "mahabhulekh-guide-step-1"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow mobile-first container layout (max-w-md centered container with realistic phone shell styling).",
+    "All interactive elements MUST include explicit data-testid attributes listed in data_testid_strategy.",
+    "Implement state persistence for Google Auth, User Language (en/mr), Active Location, User-Created Tool Listings, User Job Posts/Interests, and Private Diary Entries.",
+    "Ensure contrast compliance across all cards and custom buttons. Never use transparent background on headers or modal backdrops.",
+    "Provide clear feedback toast notifications using Sonner when actions are performed (e.g., 'Rental request sent', 'Job post created', 'Diary entry saved')."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients. Don't make generic centered layouts, simplistic gradients, and uniform styling. Create depth through layered design elements with z-index hierarchy. Use glass-morphism effects with backdrop filters (12-24px blur). You MUST NOT apply universal transition (transition: all). Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style. NEVER use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 for icons. Use lucide-react or phosphor icons. Every interaction needs micro-animations. Use 2-3x more spacing. All interactive and key informational elements MUST include data-testid attribute."
+}

@@ -1,0 +1,25 @@
+import { Image } from 'expo-image';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../auth';
+import { colors } from '../theme';
+import { Badge, Button, ErrorNote, Icon, Lang, s, tr } from '../ui';
+
+export const FARM_IMAGE = 'https://static.prod-images.emergentagent.com/jobs/e96b7b5d-3883-450e-ba65-ae0351bf51d6/images/730da2ed7c7e94a2028b4a59d035d692f4d6816627e4ff30981596a9891ff9ed.jpeg';
+export default function Welcome() {
+  const insets = useSafeAreaInsets();
+  const {signIn, busy, error, retry} = useAuth();
+  const [lang, setLang] = useState<Lang>('en');
+  return <ScrollView testID="welcome-screen" style={s.screen} contentContainerStyle={{paddingBottom: Math.max(insets.bottom, 24)}}>
+    <View style={[styles.top, {paddingTop: insets.top + 20}]}><View style={s.row}><View style={styles.mark}><Icon name="leaf" color={colors.brandSecondary}/></View><View><Text testID="welcome-brand" style={styles.brand}>KRUSHI RAKSHA</Text><Text style={s.caption}>कृषी रक्षण</Text></View></View><Pressable testID="welcome-language-toggle" accessibilityRole="button" onPress={() => setLang(lang === 'en' ? 'mr' : 'en')} style={styles.lang}><Text style={s.caption}>{lang === 'en' ? 'मराठी' : 'ENG'}</Text></Pressable></View>
+    <View style={styles.hero}><Image testID="welcome-farm-image" source={FARM_IMAGE} style={styles.photo} contentFit="cover"/><View style={styles.imageShade}/><View style={styles.heroBadge}><Badge id="welcome-maharashtra-badge" label={tr(lang, 'ROOTED IN MAHARASHTRA', 'महाराष्ट्राच्या मातीशी जोडलेले')}/></View><View style={styles.heroCaption}><Icon name="location-outline" size={15}/><Text style={styles.photoText}>{tr(lang, 'Your land. Your community. Your future.', 'तुमची जमीन. तुमचा समुदाय. तुमचे भविष्य.')}</Text></View></View>
+    <View style={styles.main}><Text testID="welcome-eyebrow" style={s.eyebrow}>{tr(lang, 'GROW BETTER, TOGETHER', 'एकत्र मिळून प्रगती करूया')}</Text><Text testID="welcome-title" style={styles.title}>{tr(lang, 'A stronger future.\nFor every farmer.', 'प्रत्येक शेतकऱ्यासाठी\nउज्ज्वल भविष्य.')}</Text><Text testID="welcome-description" style={s.body}>{tr(lang, 'Protect your crops. Find the right tools. Connect with the people who help you grow.', 'पिकांचे संरक्षण करा. योग्य अवजारे शोधा. शेतीसाठी योग्य लोकांशी जोडा.')}</Text>
+    <View style={styles.features}>{[['leaf-outline','Crop care','पीक काळजी'],['construct-outline','Tool rentals','अवजारे भाड्याने'],['people-outline','Farm work','शेतीचे काम']].map(([icon,en,mr]) => <View key={en} style={styles.feature}><Icon name={icon as 'leaf-outline'} size={19} color={colors.brandSecondary}/><Text style={styles.featureText}>{tr(lang,en,mr)}</Text></View>)}</View>
+    <ErrorNote id="auth-error" text={error}/><Button id="google-signin-button" label={tr(lang, 'Continue with Google', 'Google सह पुढे जा')} icon="logo-google" onPress={() => void signIn()} busy={busy}/>
+    {error ? <Button id="auth-retry-button" secondary label={tr(lang,'Check existing session','सत्र पुन्हा तपासा')} onPress={retry}/> : null}
+    <View style={[s.row, styles.privacy]}><Icon name="lock-closed-outline" color={colors.muted} size={14}/><Text testID="welcome-privacy-note" style={[s.caption, s.center]}>{tr(lang, 'Your farm diary and conversations stay private.', 'तुमची पीक डायरी आणि संभाषणे खाजगी राहतात.')}</Text></View>
+    </View>
+  </ScrollView>;
+}
+const styles = StyleSheet.create({top: {paddingHorizontal: 24, paddingBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}, mark: {width: 44, height: 44, borderWidth: 1, borderColor: colors.borderStrong, borderRadius: 14, alignItems: 'center', justifyContent: 'center'}, brand: {fontSize: 13, letterSpacing: 1.2, fontWeight: '800', color: colors.onSurface}, lang: {minWidth: 46, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: 12}, hero: {height: 244, marginHorizontal: 16, borderRadius: 22, overflow: 'hidden'}, photo: {width: '100%', height: '100%'}, imageShade: {position:'absolute',top:0,left:0,right:0,bottom:0, backgroundColor: colors.photoShade}, heroBadge: {position: 'absolute', left: 18, top: 18}, heroCaption: {position: 'absolute', bottom: 20, left: 18, right: 18, flexDirection: 'row', alignItems: 'center', gap: 7}, photoText: {fontSize: 11, color: colors.onBrand, fontWeight: '500', flex: 1}, main: {paddingHorizontal: 24, paddingTop: 28, gap: 17}, title: {fontSize: 36, lineHeight: 42, fontWeight: '700', letterSpacing: -1.4, color: colors.onSurface}, features: {flexDirection: 'row', paddingVertical: 5, gap: 8}, feature: {flex: 1, gap: 7, borderLeftWidth: 1, borderColor: colors.border, paddingLeft: 12}, featureText: {fontSize: 11, color: colors.onSurfaceSecondary}, privacy: {justifyContent: 'center', gap: 6}});
