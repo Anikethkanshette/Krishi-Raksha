@@ -4,7 +4,6 @@
 
 ### A mobile-first farming companion for Maharashtra — weather, crop intelligence, bilingual guidance, and local agri-marketplace support in one experience.
 
-<img src="frontend/assets/images/app-image.png" alt="Krushi Raksha mobile app preview showing farmer dashboard and crop support experience" width="820" />
 
 <p>
   <img src="https://img.shields.io/badge/TypeScript-App%20Layer-3178C6?style=for-the-badge" alt="TypeScript badge" />
